@@ -79,14 +79,33 @@ def get_worksheet():
     return _worksheet
 
 
+def reset_worksheet():
+    """Drop the cached worksheet so the next call reconnects.
+
+    Useful after a transient API/auth error (e.g. Render waking from sleep
+    or an expired token) so a retry can establish a fresh connection.
+    """
+    global _worksheet
+    _worksheet = None
+
+
 def append_user(timestamp, full_name, email, phone, note):
-    """Append a single user record as a new row."""
+    """Append a single user record as a new row (reconnects once on failure)."""
     with _lock:
-        worksheet = get_worksheet()
-        worksheet.append_row(
-            [timestamp, full_name, email, phone, note],
-            value_input_option="USER_ENTERED",
-        )
+        try:
+            worksheet = get_worksheet()
+            worksheet.append_row(
+                [timestamp, full_name, email, phone, note],
+                value_input_option="USER_ENTERED",
+            )
+        except Exception:
+            # Reconnect once in case the cached client went stale.
+            reset_worksheet()
+            worksheet = get_worksheet()
+            worksheet.append_row(
+                [timestamp, full_name, email, phone, note],
+                value_input_option="USER_ENTERED",
+            )
 
 
 def email_exists(email):
@@ -94,8 +113,13 @@ def email_exists(email):
     if not email:
         return False
     with _lock:
-        worksheet = get_worksheet()
-        # Column 3 is the email column (1-indexed): Timestamp, Name, Email...
-        existing = worksheet.col_values(3)
+        try:
+            worksheet = get_worksheet()
+            existing = worksheet.col_values(3)
+        except Exception:
+            reset_worksheet()
+            worksheet = get_worksheet()
+            # Column 3 is the email column (1-indexed): Timestamp, Name, Email...
+            existing = worksheet.col_values(3)
     existing_lower = {value.strip().lower() for value in existing[1:]}
     return email.strip().lower() in existing_lower
