@@ -1,0 +1,24 @@
+name: Keep Render awake
+
+# ปลุกเว็บบน Render Free ไม่ให้หลับ โดยยิง request ไปที่ /healthz เป็นระยะ
+on:
+  schedule:
+    # ทุก ๆ 10 นาที (GitHub cron ใช้เวลา UTC และอาจดีเลย์ได้บ้าง)
+    - cron: "*/10 * * * *"
+  # เผื่ออยากกดรันเองจากหน้า Actions
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: |
+          echo "Pinging Render app at $(date -u) ..."
+          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 https://mupy.onrender.com/healthz)
+          echo "HTTP status: $code"
+          if [ "$code" != "200" ]; then
+            echo "Health check did not return 200"
+            exit 1
+          fi
+          echo "App is awake."
