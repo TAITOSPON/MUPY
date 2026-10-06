@@ -64,9 +64,13 @@ def _open_worksheet():
     spreadsheet = client.open_by_key(sheet_id)
     worksheet = spreadsheet.worksheet(sheet_name)
 
-    # Write the header row once if the sheet is empty.
-    if not worksheet.get_all_values():
-        worksheet.append_row(HEADER, value_input_option="USER_ENTERED")
+    # Write the header row once if the sheet has no real content yet.
+    # Note: a freshly cleared sheet can return [[]] rather than [], so we
+    # check whether any cell actually holds a value.
+    values = worksheet.get_all_values()
+    is_empty = not any(any(cell for cell in row) for row in values)
+    if is_empty:
+        worksheet.append_row(HEADER, value_input_option="RAW")
 
     return worksheet
 
@@ -90,22 +94,22 @@ def reset_worksheet():
 
 
 def append_user(timestamp, full_name, email, phone, note):
-    """Append a single user record as a new row (reconnects once on failure)."""
+    """Append a single user record as a new row (reconnects once on failure).
+
+    Uses value_input_option="RAW" so values are stored exactly as given.
+    This keeps leading zeros on Thai phone numbers (e.g. 0812345678) instead
+    of letting Sheets interpret them as a number and strip the leading 0.
+    """
+    row = [str(timestamp), str(full_name), str(email), str(phone), str(note)]
     with _lock:
         try:
             worksheet = get_worksheet()
-            worksheet.append_row(
-                [timestamp, full_name, email, phone, note],
-                value_input_option="USER_ENTERED",
-            )
+            worksheet.append_row(row, value_input_option="RAW")
         except Exception:
             # Reconnect once in case the cached client went stale.
             reset_worksheet()
             worksheet = get_worksheet()
-            worksheet.append_row(
-                [timestamp, full_name, email, phone, note],
-                value_input_option="USER_ENTERED",
-            )
+            worksheet.append_row(row, value_input_option="RAW")
 
 
 def email_exists(email):
