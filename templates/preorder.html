@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}สั่งจองยาล่วงหน้า{% endblock %}
+
+{% block content %}
+<h1>สั่งจองยาล่วงหน้า</h1>
+<p class="subtitle">เลือกจำนวนยาที่ต้องการสั่ง แล้วกรอกข้อมูลติดต่อกลับ</p>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="alerts">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+<form action="{{ url_for('preorder_submit') }}" method="post" novalidate>
+    <div class="field">
+        <label for="customer_name">ชื่อลูกค้า <span class="required">*</span></label>
+        <input
+            type="text"
+            id="customer_name"
+            name="customer_name"
+            value="{{ customer_name or '' }}"
+            placeholder="เช่น สมชาย ใจดี"
+            required
+            autocomplete="name"
+        >
+    </div>
+
+    <div class="field">
+        <label for="contact">ข้อมูลติดต่อกลับ <span class="required">*</span></label>
+        <input
+            type="text"
+            id="contact"
+            name="contact"
+            value="{{ contact or '' }}"
+            placeholder="เบอร์โทร / Line / อีเมล"
+            required
+        >
+    </div>
+
+    <div class="field">
+        <label>รายการยา <span class="required">*</span></label>
+        <ul class="medicine-list">
+            {% for medicine in medicines %}
+            <li class="medicine-item">
+                <img
+                    class="medicine-thumb"
+                    src="{{ url_for('static', filename='images/' ~ (medicine.image or 'placeholder.svg')) }}"
+                    alt="{{ medicine.name }}"
+                    onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/placeholder.svg') }}'"
+                >
+                <span class="medicine-name">{{ medicine.name }}</span>
+                <input
+                    type="number"
+                    class="qty-input"
+                    name="qty_{{ loop.index0 }}"
+                    value="{{ (quantities[loop.index0] if quantities else '') or '' }}"
+                    min="0"
+                    step="1"
+                    inputmode="numeric"
+                    placeholder="0"
+                    aria-label="จำนวนของ {{ medicine.name }}"
+                >
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <button type="submit" class="btn-primary">ส่งคำสั่งจอง</button>
+</form>
+{% endblock %}

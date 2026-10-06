@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Paracetamol box">
+  <rect x="10" y="14" width="44" height="38" rx="5" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+  <rect x="10" y="14" width="44" height="12" rx="5" fill="#0284c7"/>
+  <rect x="18" y="32" width="28" height="4" rx="2" fill="#0284c7"/>
+  <rect x="18" y="40" width="20" height="4" rx="2" fill="#7dd3fc"/>
+  <circle cx="44" cy="42" r="6" fill="#fff" stroke="#0284c7" stroke-width="2"/>
+  <path d="M44 39v6M41 42h6" stroke="#0284c7" stroke-width="2" stroke-linecap="round"/>
+</svg>

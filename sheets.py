@@ -26,11 +26,33 @@ SCOPES = [
 # Header row written to the sheet the first time it is used.
 HEADER = ["Timestamp", "Full name", "Email", "Phone", "Note"]
 
+# รายการยาสำหรับหน้าสั่งจองล่วงหน้า (pre-order).
+# แก้ไข/เพิ่มรายการได้ที่นี่ที่เดียว หน้าเว็บจะอัปเดตตาม.
+# แต่ละรายการมี "name" (ชื่อที่แสดง + บันทึกลงชีต) และ "image"
+# (ชื่อไฟล์รูปใน static/images/). ถ้าไฟล์รูปไม่มี หน้าเว็บจะใช้ placeholder แทน.
+MEDICINES = [
+    {"name": "พาราเซตามอล (Paracetamol) 500mg", "image": "paracetamol.svg"},
+    {"name": "ไอบูโพรเฟน (Ibuprofen) 400mg", "image": "ibuprofen.svg"},
+    {"name": "อะม็อกซีซิลลิน (Amoxicillin) 500mg", "image": "amoxicillin.svg"},
+    {"name": "ยาแก้แพ้ (Cetirizine) 10mg", "image": "cetirizine.svg"},
+    {"name": "ยาลดกรด (Antacid)", "image": "antacid.svg"},
+    {"name": "วิตามินซี (Vitamin C) 1000mg", "image": "vitamin-c.svg"},
+    {"name": "ยาแก้ไอ (Cough syrup)", "image": "cough-syrup.svg"},
+    {"name": "เกลือแร่ (ORS)", "image": "ors.svg"},
+]
+
+# ชื่อชีต (worksheet) สำหรับเก็บคำสั่งจองยา แยกจากชีตลงทะเบียน.
+PREORDER_SHEET_NAME = os.environ.get("PREORDER_SHEET_NAME", "Preorders")
+
+# หัวตารางของชีต pre-order: เวลา, ชื่อลูกค้า, ข้อมูลติดต่อกลับ, รายการสั่ง.
+PREORDER_HEADER = ["Timestamp", "Customer name", "Contact", "Order"]
+
 LOCAL_KEY_FILE = os.path.join(os.path.dirname(__file__), "service_account.json")
 
 # gspread clients are not guaranteed thread-safe; guard sheet access.
 _lock = threading.Lock()
 _worksheet = None
+_preorder_worksheet = None
 
 
 def _load_credentials():
@@ -127,3 +149,102 @@ def email_exists(email):
             existing = worksheet.col_values(3)
     existing_lower = {value.strip().lower() for value in existing[1:]}
     return email.strip().lower() in existing_lower
+
+
+def _open_preorder_worksheet():
+    """Open (and cache) the pre-order worksheet, creating it + header if needed."""
+    creds = _load_credentials()
+    client = gspread.authorize(creds)
+
+    sheet_id = os.environ.get("SHEET_ID")
+    if not sheet_id:
+        raise RuntimeError("The SHEET_ID environment variable is not set.")
+
+    spreadsheet = client.open_by_key(sheet_id)
+
+    # ใช้ชีตแยกสำหรับ pre-order ถ้ายังไม่มีให้สร้างใหม่.
+    try:
+        worksheet = spreadsheet.worksheet(PREORDER_SHEET_NAME)
+    except gspread.WorksheetNotFound:
+        worksheet = spreadsheet.add_worksheet(
+            title=PREORDER_SHEET_NAME, rows=1000, cols=len(PREORDER_HEADER)
+        )
+
+    values = worksheet.get_all_values()
+    is_empty = not any(any(cell for cell in row) for row in values)
+    if is_empty:
+        worksheet.append_row(PREORDER_HEADER, value_input_option="RAW")
+
+    return worksheet
+
+
+def get_preorder_worksheet():
+    """Return the cached pre-order worksheet, opening it on first use."""
+    global _preorder_worksheet
+    if _preorder_worksheet is None:
+        _preorder_worksheet = _open_preorder_worksheet()
+    return _preorder_worksheet
+
+
+def reset_preorder_worksheet():
+    """Drop the cached pre-order worksheet so the next call reconnects."""
+    global _preorder_worksheet
+    _preorder_worksheet = None
+
+
+def append_preorder(timestamp, customer_name, contact, order_text):
+    """Append a single pre-order record as a new row (reconnects once on failure).
+
+    order_text ควรเป็นสรุปรายการยาที่สั่ง เช่น
+    "พาราเซตามอล x2; วิตามินซี x1".
+    ใช้ value_input_option="RAW" เพื่อเก็บค่าตามที่กรอกจริง.
+    """
+    row = [str(timestamp), str(customer_name), str(contact), str(order_text)]
+    with _lock:
+        try:
+            worksheet = get_preorder_worksheet()
+            worksheet.append_row(row, value_input_option="RAW")
+        except Exception:
+            # Reconnect once in case the cached client went stale.
+            reset_preorder_worksheet()
+            worksheet = get_preorder_worksheet()
+            worksheet.append_row(row, value_input_option="RAW")
+
+
+def get_preorders():
+    """อ่านคำสั่งจองทั้งหมดจากชีต Preorders (ใหม่สุดอยู่บน).
+
+    คืนค่าเป็น list ของ dict:
+        {"timestamp", "customer_name", "contact", "order"}
+    ข้ามแถวหัวตาราง (header) ให้อัตโนมัติ.
+    """
+    with _lock:
+        try:
+            worksheet = get_preorder_worksheet()
+            values = worksheet.get_all_values()
+        except Exception:
+            reset_preorder_worksheet()
+            worksheet = get_preorder_worksheet()
+            values = worksheet.get_all_values()
+
+    orders = []
+    # แถวแรกเป็น header (PREORDER_HEADER) จึงเริ่มที่ index 1.
+    for row in values[1:]:
+        # เผื่อบางแถวมีคอลัมน์ไม่ครบ ให้เติมค่าว่าง.
+        cells = (list(row) + ["", "", "", ""])[:4]
+        timestamp, customer_name, contact, order = cells
+        # ข้ามแถวว่างสนิท.
+        if not any(cell.strip() for cell in cells):
+            continue
+        orders.append(
+            {
+                "timestamp": timestamp,
+                "customer_name": customer_name,
+                "contact": contact,
+                "order": order,
+            }
+        )
+
+    # ใหม่สุดอยู่บน (ชีตเก็บเรียงเก่า->ใหม่ จึงกลับลำดับ).
+    orders.reverse()
+    return orders

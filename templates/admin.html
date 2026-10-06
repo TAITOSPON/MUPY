@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}จัดการหลังบ้าน{% endblock %}
+{% block card_class %}card-wide{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <div>
+        <h1>จัดการหลังบ้าน</h1>
+        <p class="subtitle">ดูรายการยาและคำสั่งจองทั้งหมด</p>
+    </div>
+    <form action="{{ url_for('admin_logout') }}" method="post">
+        <button type="submit" class="btn-logout">ออกจากระบบ</button>
+    </form>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="alerts">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+{% if load_error %}
+    <div class="alert alert-error">{{ load_error }}</div>
+{% endif %}
+
+<section class="admin-section">
+    <h2>รายการยาในระบบ <span class="count-badge">{{ medicines|length }}</span></h2>
+    <ul class="admin-medicine-list">
+        {% for medicine in medicines %}
+        <li class="admin-medicine-item">
+            <img
+                class="medicine-thumb"
+                src="{{ url_for('static', filename='images/' ~ (medicine.image or 'placeholder.svg')) }}"
+                alt="{{ medicine.name }}"
+                onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/placeholder.svg') }}'"
+            >
+            <span>{{ medicine.name }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+</section>
+
+<section class="admin-section">
+    <h2>คำสั่งจองยา <span class="count-badge">{{ order_count }}</span></h2>
+
+    {% if orders %}
+    <div class="table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>เวลา</th>
+                    <th>ชื่อลูกค้า</th>
+                    <th>ติดต่อกลับ</th>
+                    <th>รายการที่สั่ง</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td class="nowrap">{{ order.timestamp }}</td>
+                    <td>{{ order.customer_name }}</td>
+                    <td>{{ order.contact }}</td>
+                    <td>{{ order.order }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% elif not load_error %}
+    <p class="empty-state">ยังไม่มีคำสั่งจอง</p>
+    {% endif %}
+</section>
+
+<p class="page-link">
+    <a href="{{ url_for('preorder') }}">ไปหน้าสั่งจองยา →</a>
+</p>
+{% endblock %}

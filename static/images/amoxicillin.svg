@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Amoxicillin capsule">
+  <g transform="rotate(45 32 32)">
+    <rect x="18" y="26" width="28" height="12" rx="6" fill="#fde68a" stroke="#d97706" stroke-width="2"/>
+    <rect x="18" y="26" width="14" height="12" rx="6" fill="#f472b6" stroke="#db2777" stroke-width="2"/>
+  </g>
+  <circle cx="18" cy="20" r="3" fill="#fcd34d"/>
+  <circle cx="48" cy="46" r="3" fill="#f9a8d4"/>
+</svg>

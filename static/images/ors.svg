@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="ORS sachet">
+  <path d="M16 14h32v38a2 2 0 0 1-2 2H18a2 2 0 0 1-2-2V14z" fill="#cffafe" stroke="#0891b2" stroke-width="2"/>
+  <path d="M14 12h36l-2 6H16l-2-6z" fill="#0891b2"/>
+  <path d="M22 26h20M22 32h20M22 38h14" stroke="#0891b2" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="40" cy="44" r="4" fill="#0891b2"/>
+</svg>

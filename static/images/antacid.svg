@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Antacid bottle">
+  <rect x="24" y="10" width="16" height="7" rx="2" fill="#059669"/>
+  <path d="M20 20c0-2 1.6-3 3.6-3h16.8c2 0 3.6 1 3.6 3v30c0 2-1.6 4-3.6 4H23.6c-2 0-3.6-2-3.6-4V20z" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
+  <rect x="24" y="30" width="16" height="14" rx="2" fill="#fff" stroke="#059669" stroke-width="1.5"/>
+  <path d="M28 37h8M32 33v8" stroke="#059669" stroke-width="2" stroke-linecap="round"/>
+</svg>

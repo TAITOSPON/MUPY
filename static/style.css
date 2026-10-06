@@ -157,3 +157,268 @@ textarea {
     font-size: 0.82rem;
     text-align: center;
 }
+
+/* ---- หน้าสั่งจองยาล่วงหน้า (pre-order) ---- */
+.medicine-list {
+    list-style: none;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.medicine-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+}
+
+.medicine-item:last-child {
+    border-bottom: none;
+}
+
+.medicine-item:nth-child(even) {
+    background: #f8fafc;
+}
+
+.medicine-thumb {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid var(--border);
+    padding: 3px;
+    object-fit: contain;
+}
+
+.medicine-name {
+    font-size: 0.95rem;
+    line-height: 1.35;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.qty-input {
+    width: 72px;
+    flex-shrink: 0;
+    padding: 8px 10px;
+    text-align: center;
+}
+
+.page-link {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 0.92rem;
+}
+
+.page-link a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.page-link a:hover {
+    text-decoration: underline;
+}
+
+/* ---- สรุปรายการในตะกร้า (หน้ายืนยันสั่งจอง) ---- */
+.order-summary {
+    margin-top: 24px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 18px 20px;
+    text-align: left;
+}
+
+.order-summary h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.cart-list {
+    list-style: none;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 0.95rem;
+}
+
+.cart-qty {
+    font-weight: 600;
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+.cart-total {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 12px;
+    margin-top: 4px;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.order-meta {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    display: grid;
+    gap: 8px;
+}
+
+.order-meta div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.order-meta dt {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.order-meta dd {
+    font-size: 0.9rem;
+    text-align: right;
+    word-break: break-word;
+}
+
+.success-actions {
+    text-align: center;
+    margin-top: 22px;
+}
+
+.success-actions .btn-primary {
+    width: auto;
+    padding: 12px 28px;
+}
+
+/* ---- หน้า admin หลังบ้าน ---- */
+.card-wide {
+    max-width: 860px;
+}
+
+.admin-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.admin-header h1 {
+    margin-bottom: 6px;
+}
+
+.btn-logout {
+    flex-shrink: 0;
+    background: #fff;
+    color: var(--error-text);
+    border: 1px solid var(--error-border);
+    padding: 9px 16px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.btn-logout:hover {
+    background: var(--error-bg);
+}
+
+.admin-section {
+    margin-top: 26px;
+}
+
+.admin-section h2 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.count-badge {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 999px;
+}
+
+.admin-medicine-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+}
+
+.admin-medicine-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.9rem;
+}
+
+.table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.admin-table thead {
+    background: #f8fafc;
+}
+
+.admin-table th,
+.admin-table td {
+    text-align: left;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+}
+
+.admin-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.admin-table tbody tr:nth-child(even) {
+    background: #fafbfc;
+}
+
+.admin-table .nowrap {
+    white-space: nowrap;
+}
+
+.empty-state {
+    color: var(--muted);
+    font-size: 0.92rem;
+    padding: 16px;
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+}

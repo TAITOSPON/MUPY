@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}ส่งคำสั่งจองสำเร็จ{% endblock %}
+
+{% block content %}
+<div class="success-box">
+    <div class="success-icon">✓</div>
+    <h1>ส่งคำสั่งจองสำเร็จ</h1>
+    <p class="subtitle">ขอบคุณที่สั่งจอง เราจะติดต่อกลับโดยเร็วที่สุด</p>
+</div>
+
+{% if order %}
+<div class="order-summary">
+    <h2>รายการในตะกร้า</h2>
+
+    <ul class="cart-list">
+        {% for item in order.products %}
+        <li class="cart-item">
+            <span class="cart-name">{{ item.name }}</span>
+            <span class="cart-qty">x{{ item.qty }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <div class="cart-total">
+        <span>รวมทั้งหมด</span>
+        <span>{{ order.total_qty }} ชิ้น</span>
+    </div>
+
+    <dl class="order-meta">
+        <div>
+            <dt>ชื่อลูกค้า</dt>
+            <dd>{{ order.customer_name }}</dd>
+        </div>
+        <div>
+            <dt>ติดต่อกลับ</dt>
+            <dd>{{ order.contact }}</dd>
+        </div>
+        <div>
+            <dt>เวลาสั่งจอง</dt>
+            <dd>{{ order.timestamp }}</dd>
+        </div>
+    </dl>
+</div>
+{% endif %}
+
+<div class="success-actions">
+    <a href="{{ url_for('preorder') }}" class="btn-primary">สั่งจองเพิ่ม</a>
+</div>
+{% endblock %}
