@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}ลงทะเบียนข้อมูล{% endblock %}
+
+{% block content %}
+<h1>ลงทะเบียนข้อมูล</h1>
+<p class="subtitle">กรุณากรอกข้อมูลให้ครบถ้วน แล้วกดบันทึก</p>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="alerts">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+<form action="{{ url_for('submit') }}" method="post" novalidate>
+    <div class="field">
+        <label for="full_name">ชื่อ - นามสกุล <span class="required">*</span></label>
+        <input
+            type="text"
+            id="full_name"
+            name="full_name"
+            value="{{ full_name or '' }}"
+            placeholder="เช่น สมชาย ใจดี"
+            required
+            autocomplete="name"
+        >
+    </div>
+
+    <div class="field">
+        <label for="email">อีเมล <span class="required">*</span></label>
+        <input
+            type="email"
+            id="email"
+            name="email"
+            value="{{ email or '' }}"
+            placeholder="example@email.com"
+            required
+            autocomplete="email"
+        >
+    </div>
+
+    <div class="field">
+        <label for="phone">เบอร์โทร <span class="required">*</span></label>
+        <input
+            type="tel"
+            id="phone"
+            name="phone"
+            value="{{ phone or '' }}"
+            placeholder="08x-xxx-xxxx"
+            required
+            autocomplete="tel"
+        >
+    </div>
+
+    <div class="field">
+        <label for="note">หมายเหตุ</label>
+        <textarea
+            id="note"
+            name="note"
+            rows="3"
+            placeholder="ข้อความเพิ่มเติม (ถ้ามี)"
+        >{{ note or '' }}</textarea>
+    </div>
+
+    <button type="submit" class="btn-primary">บันทึกข้อมูล</button>
+</form>
+{% endblock %}

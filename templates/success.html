@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}บันทึกสำเร็จ{% endblock %}
+
+{% block content %}
+<div class="success-box">
+    <div class="success-icon">✓</div>
+    <h1>บันทึกข้อมูลสำเร็จ</h1>
+    <p class="subtitle">ขอบคุณที่ลงทะเบียน ข้อมูลของคุณถูกบันทึกเรียบร้อยแล้ว</p>
+    <a href="{{ url_for('index') }}" class="btn-primary">ลงทะเบียนเพิ่ม</a>
+</div>
+{% endblock %}

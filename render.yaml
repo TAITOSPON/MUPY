@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: mupy-form
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.4"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SHEET_ID
+        sync: false
+      - key: SHEET_NAME
+        value: "Sheet1"
+      - key: GOOGLE_CREDENTIALS
+        sync: false
